@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complex Exponentials on the Unit Circle - Mathematical Visualization</title>
+    <meta name="description" content="Interactive visualization proving |e^(iπ)| = |π^(ie)| = |i^(πe)| = 1">
+    <meta name="author" content="Mathematical Visualization">
+    <meta name="keywords" content="complex numbers, euler formula, unit circle, mathematics, visualization">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+        
+        .content-wrapper {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .section h3 {
+            color: #555;
+            margin: 20px 0 15px 0;
+            font-size: 1.3em;
+        }
+        
+        .math-equation {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            overflow-x: auto;
+        }
+        
+        .math-inline {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        
+        .canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 30px 0;
+        }
+        
+        canvas {
+            display: block;
+            margin: 0 auto;
+            cursor: crosshair;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            font-weight: 600;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .legend-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .color-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .value {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 8px;
+        }
+        
+        .explanation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .explanation-card {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .explanation-card h4 {
+            color: #5e35b1;
+            margin-bottom: 10px;
+        }
+        
+        .derivation {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .derivation-step {
+            margin: 10px 0;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 5px;
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #ff9800;
+        }
+        
+        .info-note {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            padding: 20px;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content-wrapper {
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header>
+            <h1>|e<sup>iπ</sup>| = |π<sup>ie</sup>| = |i<sup>πe</sup>| = 1</h1>
+            <p>An Interactive Mathematical Journey Through Complex Exponentials</p>
+        </header>
+        
+        <div class="content-wrapper">
+            <!-- Introduction Section -->
+            <div class="section">
+                <h2>Introduction</h2>
+                <p>
+                    This remarkable identity showcases a beautiful property of complex exponentials: three seemingly different 
+                    expressions involving the most important mathematical constants—<span class="math-inline">e</span>, 
+                    <span class="math-inline">π</span>, and <span class="math-inline">i</span>—all have the same absolute value of 1.
+                </p>
+                <div class="highlight">
+                    <strong>Key Insight:</strong> When we raise <span class="math-inline">e</span> to a purely imaginary power, 
+                    the result always lies on the unit circle in the complex plane, meaning its absolute value (modulus) is exactly 1.
+                </div>
+            </div>
+            
+            <!-- Interactive Visualization -->
+            <div class="section">
+                <h2>Interactive Visualization</h2>
+                <p>
+                    Explore how these three complex numbers all lie perfectly on the unit circle. Use the controls below to animate 
+                    the visualization and see the mathematical beauty in motion.
+                </p>
+                
+                <div class="canvas-container">
+                    <div class="controls">
+                        <button onclick="toggleAnimation()" id="animBtn">Start Animation</button>
+                        <button onclick="showTraces()" id="traceBtn">Show Traces</button>
+                        <button onclick="resetView()">Reset View</button>
+                        <button onclick="showDerivation()">Show Math Steps</button>
+                    </div>
+                    
+                    <canvas id="canvas" width="600" height="600"></canvas>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #ff4444;"></div>
+                            <div>
+                                <span class="formula">e^(iπ)</span>
+                                <span class="value">= -1 + 0i</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #44ff44;"></div>
+                            <div>
+                                <span class="formula">π^(ie)</span>
+                                <span class="value" id="pi-value">≈ 0.368 - 0.930i</span>
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background: #4444ff;"></div>
+                            <div>
+                                <span class="formula">i^(πe)</span>
+                                <span class="value" id="i-value">≈ 0.949 + 0.315i</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mathematical Derivations -->
+            <div class="section">
+                <h2>Mathematical Derivations</h2>
+                
+                <div class="derivation">
+                    <h3>1. Why |e<sup>iπ</sup>| = 1</h3>
+                    <div class="derivation-step">
+                        <strong>Step 1:</strong> Apply Euler's formula
+                        <div class="math-equation">e^(iπ) = cos(π) + i·sin(π)</div>
+                    </div>
+                    <div class="derivation-step">
+                        <strong>Step 2:</strong> Evaluate trigonometric functions
+                        <div class="math-equation">e^(iπ) = -1 + i·0 = -1</div>
+                    </div>
+                    <div class="derivation-step">
+                        <strong>Step 3:</strong> Calculate absolute value
+                        <div class="math-equation">|e^(iπ)| = |-1| = 1 ✓</div>
+                    </div>
+                </div>
+                
+                <div class="derivation">
+                    <h3>2. Why |π<sup>ie</sup>| = 1</h3>
+                    <div class="derivation-step">
+                        <strong>Step 1:</strong> Rewrite using exponential form
+                        <div class="math-equation">π^(ie) = e^(ie·ln(π))</div>
+                    </div>
+                    <div class="derivation-step">
+                        <strong>Step 2:</strong> Note that ln(π) ≈ 1.1447 is real
+                        <div class="math-equation">π^(ie) = e^(i·e·1.1447)</div>
+                    </div>
+                    <div class="derivation-step">
+                        <strong>Step 3:</strong> Since the exponent is purely imaginary
+                        <div class="math-equation">|π^(ie)| = |e^(i·θ)| = 1 ✓</div>
+                        where θ = e·ln(π) ≈ 3.107 radians
+                    </div>
+                </div>
+                
+                <div class="derivation">
+                    <h3>3. Why |i<sup>πe</sup>| = 1</h3>
+                    <div class="derivation-step">
+                        <strong>Step 1:</strong> Express i in exponential form
+                        <div class="math-equation">i = e^(iπ/2)</div>
+                    </div>
+                    <div class="derivation-step">
+                        <strong>Step 2:</strong> Apply power rule
+                        <div class="math-equation">i^(πe) = (e^(iπ/2))^(πe) = e^(iπ²e/2)</div>
+                    </div>
+                    <div class="derivation-step">
+                        <strong>Step 3:</strong> Since π²e/2 ≈ 13.4 is real
+                        <div class="math-equation">|i^(πe)| = |e^(i·13.4)| = 1 ✓</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Concepts -->
+            <div class="section">
+                <h2>Key Mathematical Concepts</h2>
+                
+                <div class="explanation-grid">
+                    <div class="explanation-card">
+                        <h4>Euler's Formula</h4>
+                        <p>The fundamental equation <span class="math-inline">e^(iθ) = cos(θ) + i·sin(θ)</span> 
+                        connects exponential and trigonometric functions, placing points on the unit circle.</p>
+                    </div>
+                    
+                    <div class="explanation-card">
+                        <h4>Complex Modulus</h4>
+                        <p>For any complex number <span class="math-inline">z = a + bi</span>, the modulus 
+                        <span class="math-inline">|z| = √(a² + b²)</span> represents its distance from the origin.</p>
+                    </div>
+                    
+                    <div class="explanation-card">
+                        <h4>Unit Circle Property</h4>
+                        <p>Any complex number of the form <span class="math-inline">e^(iθ)</span> where θ is real 
+                        has modulus 1 and lies on the unit circle.</p>
+                    </div>
+                </div>
+                
+                <div class="info-note">
+                    <strong>🔍 Deep Insight:</strong> This identity reveals a profound connection between three fundamental 
+                    mathematical constants. Despite their different origins—<span class="math-inline">e</span> from calculus, 
+                    <span class="math-inline">π</span> from geometry, and <span class="math-inline">i</span> from algebra—they 
+                    interact in complex exponentiation to produce this elegant result.
+                </div>
+            </div>
+            
+            <!-- Additional Information -->
+            <div class="section">
+                <h2>Why This Matters</h2>
+                <p>
+                    This identity demonstrates several important principles in mathematics:
+                </p>
+                <ul style="margin-left: 30px; margin-top: 15px;">
+                    <li><strong>Unity of Mathematics:</strong> Different branches of mathematics are deeply interconnected</li>
+                    <li><strong>Complex Analysis:</strong> The behavior of complex exponentials is predictable and elegant</li>
+                    <li><strong>Geometric Interpretation:</strong> Abstract algebraic concepts have concrete geometric meanings</li>
+                    <li><strong>Computational Applications:</strong> These principles are fundamental in signal processing, quantum mechanics, and engineering</li>
+                </ul>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="section">
+                <h2>How to Use This Visualization</h2>
+                <div class="explanation-grid">
+                    <div class="explanation-card">
+                        <h4>🎮 Interactive Controls</h4>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Click "Start Animation" to see the points rotate</li>
+                            <li>Use "Show Traces" to visualize the circular paths</li>
+                            <li>Hover over points for detailed information</li>
+                            <li>Click "Show Math Steps" for detailed derivations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="explanation-card">
+                        <h4>📊 Visual Elements</h4>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Gray circle: The unit circle (radius = 1)</li>
+                            <li>Colored points: The three complex numbers</li>
+                            <li>Lines from origin: Complex number vectors</li>
+                            <li>Grid: Real and imaginary axes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 Complex Exponentials Visualization | Mathematical Beauty in Motion</p>
+            <p>Created with HTML5 Canvas and JavaScript | No external dependencies</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Make canvas responsive
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const maxWidth = Math.min(600, container.clientWidth - 60);
+            canvas.width = maxWidth;
+            canvas.height = maxWidth;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Animation variables
+        let centerX = canvas.width / 2;
+        let centerY = canvas.height / 2;
+        let radius = canvas.width * 0.35;
+        
+        let animating = false;
+        let animationId = null;
+        let angle = 0;
+        let traces = [];
+        let showTracesFlag = false;
+        let showMathSteps = false;
+        
+        // Calculate the three complex numbers
+        const e_ipi = { 
+            re: -1, 
+            im: 0, 
+            color: '#ff4444', 
+            label: 'e^(iπ)',
+            description: 'Euler\'s famous identity'
+        };
+        
+        // π^(ie) = e^(ie·ln(π))
+        const pi_ie_angle = Math.E * Math.log(Math.PI);
+        const pi_ie = {
+            re: Math.cos(pi_ie_angle),
+            im: -Math.sin(pi_ie_angle),
+            color: '#44ff44',
+            label: 'π^(ie)',
+            description: 'π raised to ie'
+        };
+        
+        // i^(πe) = e^(iπ²e/2)
+        const i_pie_angle = Math.PI * Math.PI * Math.E / 2;
+        const i_pie = {
+            re: Math.cos(i_pie_angle),
+            im: Math.sin(i_pie_angle),
+            color: '#4444ff',
+            label: 'i^(πe)',
+            description: 'i raised to πe'
+        };
+        
+        // Update displayed values
+        document.getElementById('pi-value').textContent = 
+            `≈ ${pi_ie.re.toFixed(3)} ${pi_ie.im >= 0 ? '+' : ''}${pi_ie.im.toFixed(3)}i`;
+        document.getElementById('i-value').textContent = 
+            `≈ ${i_pie.re.toFixed(3)} ${i_pie.im >= 0 ? '+' : ''}${i_pie.im.toFixed(3)}i`;
+        
+        const points = [e_ipi, pi_ie, i_pie];
+        
+        function drawComplexPlane() {
+            // Update dimensions
+            centerX = canvas.width / 2;
+            centerY = canvas.height / 2;
+            radius = canvas.width * 0.35;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = -2; i <= 2; i++) {
+                if (i !== 0) {
+                    // Vertical lines
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + i * radius/2, 20);
+                    ctx.lineTo(centerX + i * radius/2, canvas.height - 20);
+                    ctx.stroke();
+                    
+                    // Horizontal lines
+                    ctx.beginPath();
+                    ctx.moveTo(20, centerY + i * radius/2);
+                    ctx.lineTo(canvas.width - 20, centerY + i * radius/2);
+                    ctx.stroke();
+                }
+            }
+            
+            // Draw axes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            
+            // Real axis
+            ctx.beginPath();
+            ctx.moveTo(20, centerY);
+            ctx.lineTo(canvas.width - 20, centerY);
+            ctx.stroke();
+            
+            // Imaginary axis
+            ctx.beginPath();
+            ctx.moveTo(centerX, 20);
+            ctx.lineTo(centerX, canvas.height - 20);
+            ctx.stroke();
+            
+            // Draw arrow heads
+            const arrowSize = 8;
+            
+            // Real axis arrow
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - 20, centerY);
+            ctx.lineTo(canvas.width - 20 - arrowSize, centerY - arrowSize/2);
+            ctx.lineTo(canvas.width - 20 - arrowSize, centerY + arrowSize/2);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Imaginary axis arrow
+            ctx.beginPath();
+            ctx.moveTo(centerX, 20);
+            ctx.lineTo(centerX - arrowSize/2, 20 + arrowSize);
+            ctx.lineTo(centerX + arrowSize/2, 20 + arrowSize);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw axis labels
+            ctx.fillStyle = '#333';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Real', canvas.width - 40, centerY - 10);
+            ctx.textAlign = 'left';
+            ctx.fillText('Imaginary', centerX + 10, 35);
+            
+            // Draw unit circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw unit circle label
+            ctx.fillStyle = '#999';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Unit Circle: |z| = 1', centerX, centerY - radius - 10);
+            
+            // Draw scale markers
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('1', centerX + radius, centerY + 20);
+            ctx.fillText('-1', centerX - radius, centerY + 20);
+            ctx.textAlign = 'left';
+            ctx.fillText('i', centerX + 10, centerY - radius + 5);
+            ctx.fillText('-i', centerX + 10, centerY + radius + 5);
+            
+            // Draw quarter marks on unit circle
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 2]);
+            for (let i = 0; i < 8; i++) {
+                const angle = i * Math.PI / 4;
+                const x1 = centerX + Math.cos(angle) * (radius - 5);
+                const y1 = centerY - Math.sin(angle) * (radius - 5);
+                const x2 = centerX + Math.cos(angle) * (radius + 5);
+                const y2 = centerY - Math.sin(angle) * (radius + 5);
+                
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+            ctx.setLineDash([]);
+        }
+        
+        function drawPoint(point, highlight = false, animatedAngle = null) {
+            let x, y;
+            
+            if (animatedAngle !== null) {
+                x = centerX + Math.cos(animatedAngle) * radius;
+                y = centerY - Math.sin(animatedAngle) * radius;
+            } else {
+                x = centerX + point.re * radius;
+                y = centerY - point.im * radius;
+            }
+            
+            // Draw line from origin
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(x, y);
+            ctx.strokeStyle = point.color;
+            ctx.lineWidth = highlight ? 3 : 2;
+            ctx.globalAlpha = highlight ? 1 : 0.7;
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            
+            // Draw point with glow effect
+            if (highlight) {
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = point.color;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(x, y, highlight ? 10 : 8, 0, 2 * Math.PI);
+            ctx.fillStyle = point.color;
+            ctx.fill();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.shadowBlur = 0;
+            
+            // Draw label with background
+            ctx.font = highlight ? 'bold 16px Arial' : '14px Arial';
+            const labelOffset = 30;
+            const labelX = x + (x > centerX ? labelOffset : -labelOffset);
+            const labelY = y + (y > centerY ? labelOffset : -labelOffset);
+            
+            // Label background
+            const textMetrics = ctx.measureText(point.label);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(
+                labelX - textMetrics.width/2 - 5,
+                labelY - 10,
+                textMetrics.width + 10,
+                20
+            );
+            
+            // Label text
+            ctx.fillStyle = point.color;
+            ctx.textAlign = 'center';
+            ctx.fillText(point.label, labelX, labelY + 5);
+        }
+        
+        function animate() {
+            drawComplexPlane();
+            
+            // Draw traces if enabled
+            if (showTracesFlag && traces.length > 0) {
+                ctx.globalAlpha = 0.3;
+                traces.forEach((trace) => {
+                    ctx.beginPath();
+                    ctx.arc(centerX + trace.x * radius, centerY - trace.y * radius, 2, 0, 2 * Math.PI);
+                    ctx.fillStyle = trace.color;
+                    ctx.fill();
+                });
+                ctx.globalAlpha = 1;
+            }
+            
+            // Draw all points
+            points.forEach((point, index) => {
+                if (animating) {
+                    const animAngle = angle + (index * 2 * Math.PI / 3);
+                    drawPoint(point, false, animAngle);
+                    
+                    if (showTracesFlag) {
+                        traces.push({ 
+                            x: Math.cos(animAngle), 
+                            y: Math.sin(animAngle),
+                            color: point.color
+                        });
+                        if (traces.length > 450) traces.shift();
+                    }
+                } else {
+                    drawPoint(point, true);
+                }
+            });
+            
+            // Draw magnitude indicators
+            if (!animating) {
+                ctx.strokeStyle = '#9966ff';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.globalAlpha = 0.3;
+                
+                points.forEach(point => {
+                    const dist = Math.sqrt(point.re * point.re + point.im * point.im);
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, dist * radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                });
+                
+                ctx.globalAlpha = 1;
+                ctx.setLineDash([]);
+            }
+            
+            // Show angle measurements when not animating
+            if (!animating && showMathSteps) {
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                
+                points.forEach(point => {
+                    const angle = Math.atan2(-point.im, point.re);
+                    const labelRadius = radius + 25;
+                    const x = centerX + Math.cos(angle) * labelRadius;
+                    const y = centerY - Math.sin(angle) * labelRadius;
+                    
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`θ = ${(angle * 180 / Math.PI).toFixed(1)}°`, x, y);
+                });
+            }
+            
+            if (animating) {
+                angle += 0.02;
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        function toggleAnimation() {
+            animating = !animating;
+            const btn = document.getElementById('animBtn');
+            
+            if (animating) {
+                btn.textContent = 'Stop Animation';
+                btn.classList.add('active');
+                animate();
+            } else {
+                btn.textContent = 'Start Animation';
+                btn.classList.remove('active');
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+                angle = 0;
+                traces = [];
+                drawScene();
+            }
+        }
+        
+        function showTraces() {
+            showTracesFlag = !showTracesFlag;
+            const btn = document.getElementById('traceBtn');
+            
+            if (showTracesFlag) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+                traces = [];
+            }
+            
+            if (!animating) {
+                drawScene();
+            }
+        }
+        
+        function showDerivation() {
+            showMathSteps = !showMathSteps;
+            if (!animating) {
+                drawScene();
+            }
+        }
+        
+        function resetView() {
+            animating = false;
+            showTracesFlag = false;
+            showMathSteps = false;
+            angle = 0;
+            traces = [];
+            
+            document.getElementById('animBtn').textContent = 'Start Animation';
+            document.getElementById('animBtn').classList.remove('active');
+            document.getElementById('traceBtn').classList.remove('active');
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            drawScene();
+        }
+        
+        function drawScene() {
+            drawComplexPlane();
+            points.forEach(point => drawPoint(point, true));
+        }
+        
+        // Interactive hover effect
+        canvas.addEventListener('mousemove', (e) => {
+            if (!animating) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+                const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                
+                let hovering = false;
+                points.forEach(point => {
+                    const x = centerX + point.re * radius;
+                    const y = centerY - point.im * radius;
+                    const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+                    
+                    if (dist < 15) {
+                        hovering = true;
+                        drawComplexPlane();
+                        points.forEach(p => drawPoint(p, p === point));
+                        
+                        // Show tooltip
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                        ctx.fillRect(mouseX + 10, mouseY - 30, 200, 50);
+                        ctx.fillStyle = 'white';
+                        ctx.font = '12px Arial';
+                        ctx.textAlign = 'left';
+                        ctx.fillText(point.description, mouseX + 20, mouseY - 10);
+                        ctx.fillText(`|z| = 1.000`, mouseX + 20, mouseY + 10);
+                    }
+                });
+                
+                if (!hovering) {
+                    drawScene();
+                }
+            }
+        });
+        
+        // Touch support for mobile
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        });
+        
+        // Initial draw
+        drawScene();
+        
+        // Redraw on window resize
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            drawScene();
+        });
+    </script>
+</body>
+</html>
